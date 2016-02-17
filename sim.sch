@@ -5,7 +5,7 @@
 (define K1 1.0)
 (define K2 0.5)
 (define N 1000)
-(define STEPS 10)
+(define STEPS 100)
 
 (define Zero-Position '(0 0 0))
 (define (sqr x) (* x x))
@@ -51,15 +51,37 @@
 	      conductances)
     (map (lambda (x y) (+ x y)) ret current-datagram)))
 
-(define (sum x) ; for debugging
-  (fold (lambda (x y) (+ x y)) 0 x))
+(define (sum xs)
+  (fold (lambda (x a) (+ x a)) 0 xs))
+
+(define (count xs)
+  (fold (lambda (x a) (if (> x 0)
+			  (+ a 1)
+			  a))
+	0
+	xs))
+
+(define (diff xs ys)
+  (map (lambda (x y) (if (and (> x 0) (= y 0))
+			 1
+			 0))
+       xs
+       ys))
+
+(define (diff-with-n xs ys n)
+  (map (lambda (x y) (if (and (> x 0) (= y 0))
+			 n
+			 0))
+       xs
+       ys))
 
 (define (main args)
   (let* ([p (init-positions-of-aircrafts *positions-of-aircrafts* N)]
 	 [c (map (lambda (x) (conductance Zero-Position x)) p)])
-    (let loop ([n STEPS]
-	       [r (init-received-datagram *received-datagram* N)])
-      (if (> n 0)
+    (let loop ([n 0]
+	       [r (init-received-datagram *received-datagram* N)]
+	       #;[r-past (init-received-datagram *received-datagram* N)])
+      (if (< n STEPS)
 	  (let ([rr (receive-datagram r c)])
-	    (print rr)
-	    (loop (- n 1) rr))))))
+	    (print (sum (diff-with-n rr r n)))
+	    (loop (+ n 1) rr))))))
