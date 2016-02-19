@@ -3,7 +3,7 @@
 (use srfi-27) ; Random bit generator
 
 (define K1 1.0)
-(define K2 0.31622776601683794)
+(define K2 1.0)
 (define N 1000)
 (define STEPS 100)
 
@@ -82,6 +82,6 @@
 	       [r (init-received-datagram *received-datagram* N)])
       (if (< n STEPS)
 	  (let ([rr (receive-datagram r c)])
-	    #;(print (sum (diff-with-n rr r n)))
-	    (print (count rr))
+	    (print (sum (diff-with-n rr r n)))
+	    #;(print (count rr))
 	    (loop (+ n 1) rr))))))
